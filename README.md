@@ -1,4 +1,5 @@
 # JogodaMemoria
+# Autor: Julio Gutemberg 
 
 |   |   |   |   |   |
 |---|---|---|---|---|
