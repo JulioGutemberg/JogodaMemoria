@@ -1,0 +1,22 @@
+{
+  "qtd_Conjuntos":  2,
+
+  "cartas":[
+
+  {
+    "imagemCarta": "carta0"
+    },
+  {
+    "imagemCarta": "carta1"
+  },
+  {
+    "imagemCarta": "carta2"
+  },
+  {
+    "imagemCarta": "carta3"
+  }
+
+],
+
+  "tempoTotal": 60
+}
