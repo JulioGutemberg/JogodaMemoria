@@ -7,6 +7,7 @@ public class CardClass
 {
     public string imagemCarta;
 }
+
 [System.Serializable]
 public class Configuracao                
 {

@@ -6,9 +6,9 @@ public class Card : MonoBehaviour
 {
     #region Variaveis
     [SerializeField] bool selected = false;
-    private Animator animParent;
     private Image    cardFront;
     private Image    cardBack;
+    private Animator animParent;
     public  Sprite   cardSprite;
     public  int      card_id;
 
@@ -22,7 +22,9 @@ public class Card : MonoBehaviour
     private void Start() {
         cardFront.sprite = cardSprite;
     }
-    public void SelectThisCard(){                               //Método para selecionar as cartas
+    
+    //Seleciona as cartas
+    public void SelectThisCard(){                               
         selected = !selected;
         if(Game_Manager.instance.card1 == null){                //Seleciona e adiciona o valor em carta 1.
             Game_Manager.instance.card1 = this;
@@ -36,6 +38,7 @@ public class Card : MonoBehaviour
             Game_Manager.instance.CompareCards();               //Pega os dois valores armazenados e compara.
         } 
     }
+    //A carta autodestrói
     public void DestroySelf(float time){                        
         Destroy(gameObject.transform.parent.gameObject, time);
     }      

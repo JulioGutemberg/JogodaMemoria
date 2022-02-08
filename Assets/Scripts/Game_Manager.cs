@@ -7,23 +7,16 @@ using System.Linq;
 using TMPro;
 public class Game_Manager : MonoBehaviour
 {
-    [SerializeField] TMP_Text debug; 
+   
     #region Variaveis
-    
     [SerializeField] GameObject genericCard;
     [SerializeField] Transform  container;
     [SerializeField] Sprite[] faceUpCards;
-    
     [SerializeField] List<CardData> deck;        //Lista para armazenar os valores das cartas.
     [SerializeField] List<GameObject> cardsGo;   //Lista para armazenar os Game Objects da cena. 
-    
-    private Configuracao game_Config;
     [SerializeField] JsonReader jsonReader;     //Lista para armazenar os Game Objects da cena. 
-
-
+    private Configuracao game_Config;
     private bool nextLVL;
-   
-    
     int tempCardId = 0;
     public GameObject areaLayout; 
     public int acertos = 0;
@@ -41,21 +34,22 @@ public class Game_Manager : MonoBehaviour
     }
     void Start()
     {     
-        debug.text += " Testando aqui START" + "\n";
         game_Config = jsonReader.config;   
         Setup();
     }
 
 #region Metodos
-    private void Setup(){                                           //Setup do game.                                       
-        debug.text += " Testando aqui SETUP" + "\n";
+
+    //Setup do game.
+    private void Setup(){                                                                              
         InitCard();
         Dispense(game_Config.qtd_Conjuntos);
         Control_Area(game_Config.qtd_Conjuntos);
         StartCoroutine(ShowCards(2f));   
     }
-    private void InitCard(){                                        //Transforma a lista de cartas encontradas no Json em Sprites. 
-
+    
+    //Transforma a lista de cartas encontradas no Json em Sprites. 
+    private void InitCard(){                                       
         faceUpCards = new Sprite[game_Config.cartas.Length];
 
         for(int i = 0; i < game_Config.cartas.Length; i++){  
@@ -66,16 +60,20 @@ public class Game_Manager : MonoBehaviour
             faceUpCards[i] = (Sprite)Resources.Load<Sprite>(game_Config.cartas[i].imagemCarta); 
         }
     }
-    private void Control_Area(int qtdConjuntos){                                    //Controlar a area que cada carta ocupa.    
+
+    //Controlar a area que cada carta ocupa.
+    private void Control_Area(int qtdConjuntos){                                        
         float newWidth = areaLayout.GetComponent<RectTransform>().rect.width / 245; //Divide a largura da tela pela da largura da carta. 
         float newHeight = areaLayout.GetComponent<RectTransform>().rect.height / 164;//Divide a altura da tela pela altura da carta.
         Vector2 cardSpacing = new Vector2(newWidth * 164, newHeight * 245);
 
         areaLayout.GetComponent<GridLayoutGroup>().cellSize = cardSpacing * 0.3f;
     }
-    private void Dispense(int qtd_conjuntos){                           //Controlar a distribuição das cartas na área.
+   
+    //Controlar a distribuição das cartas na área.
+    private void Dispense(int qtd_conjuntos){ 
 
-        tempCardId = 0;                                                 //Id de cada par de cartas
+        tempCardId = 0;                         //Id de cada par de cartas
         deck = new List<CardData>(); 
         cardsGo = new List<GameObject>();
 
@@ -90,15 +88,15 @@ public class Game_Manager : MonoBehaviour
             }
             tempCardId++;
         }
-        deck = Shuffle(deck);                                       //randomiza a lista de cartas (Cards) para distribui-las randomicamente
+        deck = Shuffle(deck);                   //randomiza a lista de cartas (Cards) para distribui-las randomicamente
 
-        for(int i = 0; i < deck.Count; i++)                         //atribui um card de deck para cada carta
+        for(int i = 0; i < deck.Count; i++)     //atribui um card de deck para cada carta
         {    
             cardsGo[i].transform.GetChild(0).GetComponent<Card>().card_id = deck[i].id_Card;
             cardsGo[i].transform.GetChild(0).GetComponent<Card>().cardSprite = deck[i].cardSprite;
         }
     }
-     List<CardData> Shuffle(List<CardData> data)                    //Método para embaralhar 
+     List<CardData> Shuffle(List<CardData> data) 
         {
             for (int i = data.Count - 1; i > 0; i--)
             {
@@ -114,21 +112,27 @@ public class Game_Manager : MonoBehaviour
             }
             return data;
         }
-    private void EnableCardInteraction(bool value){                 //Método para Desativar as interações com outras cartas
+    
+    //Desativa as interações com outras cartas
+    private void EnableCardInteraction(bool value){                 
         foreach(GameObject card in cardsGo){
             if(card != null)
                 card.GetComponentInChildren<Button>().enabled = value;
         }
     }
-    private void RefreshList(){                                     //Método para atualizar a lista de cartas
+    
+    //Método para atualizar a lista de cartas
+    private void RefreshList(){                                     
         for(int i = 0; i < cardsGo.Count; i++){
             if(cardsGo[i] == null)
                 cardsGo.RemoveAt(i);
         }
     }
-    public void  CompareCards(){                                    //Método para Comparar as cartas
-        if(card1 != null && card2 != null){
-            if(card1.card_id == card2.card_id){
+    
+    //Método para Comparar as cartas
+    public void  CompareCards(){                                    
+        if(card1 != null && card2 != null){         //Compara se existe valores armazenado em card1 e card2.
+            if(card1.card_id == card2.card_id){     //Se existir e os valores forem iguais, conta uma tentativa e destrói os componentes
                 card1.GetComponent<Card>().DestroySelf(1.0f);
                 card2.GetComponent<Card>().DestroySelf(1.0f);
                 StartCoroutine(WaitToDestroyCard(1.2f));
@@ -136,11 +140,11 @@ public class Game_Manager : MonoBehaviour
                 acertos++;
             }
             else {
-                StartCoroutine(WaitToFlipCardDown(0.65f));
+                StartCoroutine(WaitToFlipCardDown(0.65f));//Se os valores forem diferente, vira as cartas para baixo.
                 ScoreBoard.instance.Tentativa();
             }
         }
-        if(acertos == game_Config.qtd_Conjuntos){
+        if(acertos == game_Config.qtd_Conjuntos){ //Aumenta a quantidade de conjuntos na tela.
             if(game_Config.qtd_Conjuntos < 4){
                 StartCoroutine(NextLevel(1.2f));
                 acertos = 0;
